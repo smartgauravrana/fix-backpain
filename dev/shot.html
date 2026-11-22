@@ -1,0 +1,22 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Seed demo data</title>
+<script>
+// Dev helper: seeds ~3 weeks of demo history then opens the app at ?to=<hash>. ?fresh=1 clears data.
+const q = new URLSearchParams(location.search);
+if (q.get('fresh')) localStorage.removeItem('spineflow.v1');
+else {
+  const z = n => String(n).padStart(2, '0');
+  const key = d => `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}`;
+  const s = { v: 1, onboarded: true, side: 'left', settings: { voice: false, phase: 'auto', minutes: 5, place: 'floor', reminder: '08:00' }, checkins: {}, sessions: [], flags: {} };
+  for (let i = 20; i >= 1; i--) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    if (i % 6 !== 3) s.sessions.push({ id: +d, date: key(d), ts: +d, secs: 300 + (i % 4) * 120, phase: i > 10 ? 1 : 2, place: 'floor', items: ['cat-camel', 'curl-up'], feel: ['better', 'same', 'better'][i % 3] });
+    s.checkins[key(d)] = { back: Math.max(1, Math.round(6 - (20 - i) * 0.22 + (i % 3) * 0.5)), leg: Math.max(0, Math.round(5 - (20 - i) * 0.25)), level: i > 14 ? 3 : i > 7 ? 2 : 1, ts: +d };
+  }
+  if (q.get('video')) s.videos = { 'bird-dog': q.get('video') };
+  if (q.get('checkin')) s.checkins[key(new Date())] = { back: 3, leg: 1, level: 1, ts: Date.now() };
+  localStorage.setItem('spineflow.v1', JSON.stringify(s));
+}
+location.replace('../index.html' + (q.get('to') || '#/'));
+</script>

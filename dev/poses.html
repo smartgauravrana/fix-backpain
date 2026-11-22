@@ -1,0 +1,27 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Pose sheet</title>
+<link rel="stylesheet" href="../css/styles.css">
+<style>
+  body { padding: 10px; user-select: text; }
+  .sheet { display: grid; grid-template-columns: 160px repeat(4, 1fr); gap: 4px; align-items: center; }
+  .sheet > div { background: var(--surface); border-radius: 8px; }
+  .name { font-size: 12px; font-weight: 700; padding: 4px; background: none !important; }
+</style></head>
+<body>
+<div class="sheet" id="s"></div>
+<script type="module">
+  import { EXERCISES } from '../js/exercises.js';
+  import { createFigure } from '../js/figure.js';
+  const s = document.getElementById('s');
+  const only = new URLSearchParams(location.search).get('only');
+  for (const ex of EXERCISES.filter(e => !only || only.split(',').includes(e.id))) {
+    const n = document.createElement('div'); n.className = 'name'; n.textContent = ex.id; s.append(n);
+    for (const k of [0, 0.5, 1, 1.9]) {
+      const fig = createFigure(ex);
+      const c = document.createElement('div'); c.append(fig.svg); s.append(c);
+      const { peak, cycle } = fig.timeline;
+      fig.draw(k === 1.9 ? cycle * 0.9 : (peak || cycle / 2) * k);
+    }
+  }
+</script>
+</body></html>

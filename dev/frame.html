@@ -1,0 +1,22 @@
+<!doctype html><meta charset="utf-8"><title>Phone frame</title>
+<style>body{margin:0;background:#888;display:flex;gap:12px;padding:12px}iframe{width:390px;height:844px;border:0;background:#fff}</style>
+<script>
+// ?src=<url>&click=<selector>&wait=<ms>  (repeatable src; click/wait apply to all frames, '|' separates per-frame)
+addEventListener('DOMContentLoaded', () => {
+  const q = new URLSearchParams(location.search);
+  const clicks = (q.get('click') || '').split('|');
+  const waits = (q.get('wait') || '').split('|');
+  q.getAll('src').forEach((src, i) => {
+    const f = document.createElement('iframe'); f.src = src; if (q.get('h')) f.style.height = q.get('h') + 'px'; document.body.appendChild(f);
+    if (!clicks[i]) return;
+    f.addEventListener('load', () => setTimeout(() => {
+      const st = f.contentDocument.createElement('style');
+      st.textContent = '*,*::before,*::after{animation:none!important;transition:none!important}';
+      f.contentDocument.head.append(st);
+    }, 300));
+    clicks[i].split(',').forEach((sel, k) => setTimeout(() => {
+      try { f.contentDocument.querySelector(sel)?.click(); } catch (e) { document.title = 'ERR ' + e.message; }
+    }, 1200 + k * 500));
+  });
+});
+</script>
